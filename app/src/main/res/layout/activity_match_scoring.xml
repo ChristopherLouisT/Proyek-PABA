@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/main"
+    android:background="@drawable/bg_gradient"
+    android:padding="20dp"
+    android:gravity="center_horizontal">
+
+    <!-- Header dengan desain lebih menarik -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🏸"
+            android:textSize="40sp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BADMINTON MATCH"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#1A237E"
+            android:letterSpacing="0.1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SCORING SYSTEM"
+            android:textSize="18sp"
+            android:textColor="#3949AB"
+            android:letterSpacing="0.05"/>
+    </LinearLayout>
+
+    <!-- Pemain Section dengan card view -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="#FFFFFF"
+        android:layout_marginBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SELECT PLAYERS"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#303F9F"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:weightSum="3">
+
+                <!-- Player 1 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Player 1"
+                        android:textSize="14sp"
+                        android:textColor="#5C6BC0"
+                        android:layout_marginBottom="8dp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerPlayer1"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/spinner_background"
+                        android:paddingHorizontal="12dp"/>
+                </LinearLayout>
+
+                <!-- VS Badge -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:gravity="center"
+                        android:text="VS"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/vs_background"/>
+                </LinearLayout>
+
+                <!-- Player 2 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Player 2"
+                        android:textSize="14sp"
+                        android:textColor="#5C6BC0"
+                        android:layout_marginBottom="8dp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerPlayer2"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/spinner_background"
+                        android:paddingHorizontal="12dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Score Board -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:cardBackgroundColor="#FFFFFF"
+        android:layout_marginBottom="32dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="24dp">
+
+            <!-- Player 1 Score -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvScoreP1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="72sp"
+                    android:textStyle="bold"
+                    android:textColor="#303F9F"
+                    android:layout_marginBottom="24dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddP1"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="+1 POINT"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:backgroundTint="#303F9F"
+                    android:layout_marginBottom="8dp"
+                    app:cornerRadius="28dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMinP1"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="UNDO"
+                    android:textSize="14sp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textColor="#FF9800"
+                    app:strokeColor="#FF9800"
+                    app:cornerRadius="24dp"/>
+            </LinearLayout>
+
+            <!-- Separator -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="120dp"
+                android:background="#E8EAF6"
+                android:layout_marginHorizontal="16dp"/>
+
+            <!-- Player 2 Score -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvScoreP2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="72sp"
+                    android:textStyle="bold"
+                    android:textColor="#D32F2F"
+                    android:layout_marginBottom="24dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddP2"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="+1 POINT"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:backgroundTint="#D32F2F"
+                    android:layout_marginBottom="8dp"
+                    app:cornerRadius="28dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMinP2"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="UNDO"
+                    android:textSize="14sp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textColor="#FF9800"
+                    app:strokeColor="#FF9800"
+                    app:cornerRadius="24dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Action Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnFinishMatch"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="FINISH MATCH"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        style="@style/Widget.MaterialComponents.Button"
+        android:backgroundTint="#4CAF50"
+        android:drawablePadding="8dp"
+        app:iconTint="@android:color/white"
+        app:cornerRadius="28dp"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>
