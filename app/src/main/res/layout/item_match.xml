@@ -1,0 +1,72 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Players -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvWinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Player A"
+                android:textSize="14sp"
+                android:textColor="#2E7D32"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  VS  "
+                android:textSize="16sp"
+                android:textColor="#999"/>
+
+            <TextView
+                android:id="@+id/tvLoser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Player B"
+                android:textSize="14sp"
+                android:textColor="#C62828"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Score -->
+        <TextView
+            android:id="@+id/tvScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="21 - 17"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <!-- Date -->
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="12 Februari 2024"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textColor="#777"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

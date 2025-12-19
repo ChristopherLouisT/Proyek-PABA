@@ -44,8 +44,8 @@ class MatchScoring : AppCompatActivity() {
     }
 
     private fun setupSpinners() {
-        adapterP1 = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listForP1)
-        adapterP2 = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listForP2)
+        adapterP1 = ArrayAdapter(this, R.layout.spinner_item, listForP1)
+        adapterP2 = ArrayAdapter(this, R.layout.spinner_item, listForP2)
 
         binding.spinnerPlayer1.adapter = adapterP1
         binding.spinnerPlayer2.adapter = adapterP2

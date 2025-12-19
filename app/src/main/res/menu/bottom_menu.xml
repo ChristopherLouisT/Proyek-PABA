@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_history"
+        android:icon="@drawable/match"
+        android:title="Match History"/>
+    <item
+        android:id="@+id/menu_players"
+        android:icon="@drawable/player"
+        android:title="Players"/>
+</menu>
