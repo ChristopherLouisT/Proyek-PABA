@@ -178,6 +178,7 @@ class MatchScoring : AppCompatActivity() {
 
         // Tombol Finish
         binding.btnFinishMatch.setOnClickListener { validateAndSaveMatch() }
+        binding.btnBack.setOnClickListener { finish() }
     }
 
     private fun updateScoreDisplay() {
@@ -254,7 +255,8 @@ class MatchScoring : AppCompatActivity() {
         batch.commit()
             .addOnSuccessListener {
                 Toast.makeText(this, "Match Saved!", Toast.LENGTH_LONG).show()
-                resetMatch()
+//                resetMatch()
+                finish()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
