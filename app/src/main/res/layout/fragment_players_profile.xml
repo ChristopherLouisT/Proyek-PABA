@@ -1,19 +1,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:context=".PlayersProfileFragment">
 
-    <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Match History"
+        android:text="Players Profile"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#1F2A44"/>
 
+    <!-- Search Bar -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/searchContainer"
         android:layout_width="match_parent"
@@ -27,17 +29,16 @@
         app:boxCornerRadiusBottomEnd="12dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etSearchDate"
+            android:id="@+id/etSearchPlayer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Search Date..."
+            android:hint="Search player..."
             android:inputType="text"
             android:padding="12dp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Match List -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvMatchHistory"
+        android:id="@+id/rvPlayersProfile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/searchContainer"
@@ -47,7 +48,7 @@
         android:id="@+id/tvEmptyState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Matches Found"
+        android:text="No players found"
         android:textSize="16sp"
         android:textColor="#9E9E9E"
         android:visibility="gone"

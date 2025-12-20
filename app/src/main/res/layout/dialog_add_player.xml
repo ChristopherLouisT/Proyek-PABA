@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add New Player"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/etPlayerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Player name"
+        android:inputType="textPersonName"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="ADD PLAYER"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        style="@style/Widget.MaterialComponents.Button"
+        android:backgroundTint="#4CAF50"
+        android:drawablePadding="8dp"
+        app:iconTint="@color/white"
+        app:cornerRadius="28dp"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>

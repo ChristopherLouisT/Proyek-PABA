@@ -1,19 +1,22 @@
 package paba.proyek.proyekpaba
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
+import android.widget.EditText
+import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.toObject
+import java.util.Date
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,7 +35,9 @@ class MatchHistoryFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MatchHistoryAdapter
-    private val matchList = mutableListOf<MatchHistory>()
+    private lateinit var tvEmpty: TextView
+    private val allMatches = mutableListOf<MatchHistory>()
+    private val filteredMatches = mutableListOf<MatchHistory>()
 
     private val db = Firebase.firestore
 
@@ -42,6 +47,16 @@ class MatchHistoryFragment : Fragment() {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as MainActivity).setFabAction(
+            iconRes = R.drawable.add
+        ) {
+            // Floating Button for Match History
+            startActivity(Intent(requireContext(), MatchScoring::class.java))
         }
     }
 
@@ -56,27 +71,63 @@ class MatchHistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        tvEmpty = view.findViewById(R.id.tvEmptyState)
+
         recyclerView = view.findViewById(R.id.rvMatchHistory)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = MatchHistoryAdapter(matchList)
+        recyclerView.itemAnimator = DefaultItemAnimator()
+        adapter = MatchHistoryAdapter(filteredMatches)
         recyclerView.adapter = adapter
+
+        val etSearch = view.findViewById<EditText>(R.id.etSearchDate)
+
+        etSearch.addTextChangedListener {
+            val query = it.toString().lowercase()
+            filteredMatches.clear()
+
+            if (query.isEmpty()) {
+                filteredMatches.addAll(allMatches)
+            } else {
+                for (match in allMatches) {
+                    val dateText = millisToDateString(match.dateTimestamp).lowercase()
+                    if (dateText.contains(query)) {
+                        filteredMatches.add(match)
+                    }
+                }
+            }
+            adapter.searchQuery = query
+            adapter.notifyDataSetChanged()
+            checkEmptyState()
+        }
 
         loadMatches()
     }
+
+    private fun millisToDateString(millis: Long): String {
+        val sdf = java.text.SimpleDateFormat("dd MMMM yyyy", Locale("en"))
+        return sdf.format(Date(millis))
+    }
+
+    private fun checkEmptyState() {
+        if (filteredMatches.isEmpty()) {
+            recyclerView.visibility = View.GONE
+            tvEmpty.visibility = View.VISIBLE
+        } else {
+            recyclerView.visibility = View.VISIBLE
+            tvEmpty.visibility = View.GONE
+        }
+    }
+
 
     private fun loadMatches() {
         db.collection("matches")
             .orderBy("dateTimestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshots, error ->
 
-                if (error != null) {
-                    Log.e("Retrieve Matches", "Listen failed.", error)
-                    return@addSnapshotListener
-                }
+                if (error != null || snapshots == null) return@addSnapshotListener
 
-                if (snapshots == null) return@addSnapshotListener
-
-                matchList.clear()
+                allMatches.clear()
+                filteredMatches.clear()
 
                 for (document in snapshots.documents) {
                     val match = MatchHistory(
@@ -87,13 +138,13 @@ class MatchHistoryFragment : Fragment() {
                         scorePlayer1 = document.get("scorePlayer1").toString().toInt(),
                         scorePlayer2 = document.get("scorePlayer2").toString().toInt()
                     )
-                    matchList.add(match)
+                    allMatches.add(match)
                 }
 
+                filteredMatches.addAll(allMatches)
                 adapter.notifyDataSetChanged()
             }
     }
-
     companion object {
         /**
          * Use this factory method to create a new instance of

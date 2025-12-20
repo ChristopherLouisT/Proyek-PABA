@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var btnAddMatch: FloatingActionButton
+    private lateinit var btnAdd: FloatingActionButton
     private lateinit var btnMatchHistory: LinearLayout
     private lateinit var btnPlayersProfile: LinearLayout
 
@@ -26,10 +26,10 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        btnAddMatch = findViewById<FloatingActionButton>(R.id.btnAddMatch)
-        btnAddMatch.setOnClickListener {
-            startActivity(Intent(this, MatchScoring::class.java))
-        }
+        btnAdd = findViewById<FloatingActionButton>(R.id.btnAdd)
+//        btnAdd.setOnClickListener {
+//            startActivity(Intent(this, MatchScoring::class.java))
+//        }
 
         if (savedInstanceState == null) {
             replaceFragment(MatchHistoryFragment())
@@ -40,10 +40,10 @@ class MainActivity : AppCompatActivity() {
             replaceFragment(MatchHistoryFragment())
         }
 
-//        btnPlayersProfile = findViewById<LinearLayout>(R.id.btnPlayers)
-//        btnPlayersProfile.setOnClickListener {
-//            loadFragment(MatchHistoryFragment())
-//        }
+        btnPlayersProfile = findViewById<LinearLayout>(R.id.btnPlayers)
+        btnPlayersProfile.setOnClickListener {
+            replaceFragment(PlayersProfileFragment())
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -53,5 +53,14 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
+    }
+
+    fun setFabAction(
+        iconRes: Int,
+        onClick: () -> Unit
+    ) {
+        btnAdd.setImageResource(iconRes)
+        btnAdd.setOnClickListener { onClick() }
+        btnAdd.show()
     }
 }
