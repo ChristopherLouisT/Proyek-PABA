@@ -67,8 +67,15 @@ class PlayersProfileFragment : Fragment() {
         etSearch = view.findViewById(R.id.etSearchPlayer)
         tvEmpty = view.findViewById(R.id.tvEmptyState)
 
-        adapter = PlayersProfileAdapter(filteredPlayers)
-
+        adapter = PlayersProfileAdapter(filteredPlayers) { selectedPlayer ->
+            val intent = android.content.Intent(requireContext(), PlayerDetails::class.java)
+            intent.putExtra("EXTRA_PLAYER_ID", selectedPlayer.id)
+            intent.putExtra("EXTRA_PLAYER_NAME", selectedPlayer.name)
+            intent.putExtra("EXTRA_PLAYER_WIN", selectedPlayer.win)
+            intent.putExtra("EXTRA_PLAYER_LOSE", selectedPlayer.lose)
+            intent.putExtra("EXTRA_PLAYER_TOTAL", selectedPlayer.totalMatch)
+            startActivity(intent)
+        }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.adapter = adapter

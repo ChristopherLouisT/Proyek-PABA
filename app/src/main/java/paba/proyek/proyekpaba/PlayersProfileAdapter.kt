@@ -13,7 +13,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class PlayersProfileAdapter(
-    private val items: List<Player>
+    private val items: List<Player>,
+    private val onItemClick: (Player) -> Unit
 ) : RecyclerView.Adapter<PlayersProfileAdapter.PlayersViewHolder>() {
 
     var searchQuery: String = ""
@@ -53,6 +54,10 @@ class PlayersProfileAdapter(
         holder.tvWin.text = item.win.toString()
         holder.tvLose.text = item.lose.toString()
         holder.tvTotalMatch.text = item.totalMatch.toString()
+
+        holder.itemView.setOnClickListener {
+            onItemClick(item)
+        }
     }
 
     override fun getItemCount() = items.size

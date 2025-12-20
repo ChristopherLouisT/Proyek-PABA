@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProyekPABA">
         <activity
+            android:name=".PlayerDetails"
+            android:exported="false" />
+        <activity
             android:name=".MatchScoring"
             android:exported="false" />
         <activity
