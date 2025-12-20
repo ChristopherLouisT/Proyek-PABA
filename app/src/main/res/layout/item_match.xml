@@ -75,7 +75,7 @@
                 android:layout_height="16dp"
                 android:layout_marginEnd="4dp"
                 android:src="@drawable/calendar"
-                android:tint="#777"/>
+                app:tint="#777"/>
 
             <!-- Date -->
             <TextView
