@@ -67,7 +67,7 @@ class PlayersProfileFragment : Fragment() {
         etSearch = view.findViewById(R.id.etSearchPlayer)
         tvEmpty = view.findViewById(R.id.tvEmptyState)
 
-        adapter = PlayersProfileAdapter(filteredPlayers) { selectedPlayer ->
+         adapter = PlayersProfileAdapter(filteredPlayers) { selectedPlayer ->
             val intent = android.content.Intent(requireContext(), PlayerDetails::class.java)
             intent.putExtra("EXTRA_PLAYER_ID", selectedPlayer.id)
             intent.putExtra("EXTRA_PLAYER_NAME", selectedPlayer.name)
