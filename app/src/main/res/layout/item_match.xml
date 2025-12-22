@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -13,20 +14,18 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <!-- Players -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
 
-            <!-- Winner Name -->
             <TextView
                 android:id="@+id/tvWinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🏆Player A"
-                android:textSize="14sp"
+                android:text="🏆 Winner"
+                android:textSize="16sp"
                 android:textColor="#2E7D32"
                 android:textStyle="bold"/>
 
@@ -34,57 +33,64 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="  VS  "
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textColor="#999"
                 android:layout_marginHorizontal="6dp"/>
 
-            <!-- Loser Name -->
             <TextView
                 android:id="@+id/tvLoser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Player B"
-                android:textSize="14sp"
+                android:text="Loser"
+                android:textSize="16sp"
                 android:textColor="#C62828"
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Score -->
         <TextView
             android:id="@+id/tvScore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="21 - 17"
+            android:text="2 - 1"
             android:textAlignment="center"
-            android:textSize="18sp"
+            android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="#1F2A44"/>
 
-        <!-- Date Row -->
+        <TextView
+            android:id="@+id/tvMatchDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="21-18\n19-21\n24-22"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp"
+            android:textColor="#546E7A"
+            android:textStyle="normal"/>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:gravity="center">
 
-            <!-- Date Icon -->
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
                 android:layout_marginEnd="4dp"
                 android:src="@drawable/calendar"
-                app:tint="#777"/>
+                app:tint="#9E9E9E"/>
 
-            <!-- Date -->
             <TextView
                 android:id="@+id/tvDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="12 Februari 2024"
-                android:textSize="14sp"
-                android:textColor="#777"/>
+                android:text="12 Des 2025"
+                android:textSize="12sp"
+                android:textColor="#9E9E9E"/>
         </LinearLayout>
 
     </LinearLayout>

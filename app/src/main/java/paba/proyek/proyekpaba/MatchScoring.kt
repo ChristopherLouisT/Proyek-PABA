@@ -1,35 +1,41 @@
 package paba.proyek.proyekpaba
 
+import MatchHistory
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import paba.proyek.proyekpaba.databinding.ActivityMatchScoringBinding
+import kotlin.math.abs
 
 class MatchScoring : AppCompatActivity() {
 
     private lateinit var binding: ActivityMatchScoringBinding
     private lateinit var db: FirebaseFirestore
 
+    // --- VARIABEL POIN & SET ---
     private var scoreP1 = 0
     private var scoreP2 = 0
 
-    // DATA MASTER & LIST ADAPTER
-    private var masterPlayerList = ArrayList<Player>() // Sumber data utama
-    private var listForP1 = ArrayList<Player>() // Data untuk Spinner 1
-    private var listForP2 = ArrayList<Player>() // Data untuk Spinner 2
+    private var setsWonP1 = 0 // Jumlah set yang dimenangkan P1
+    private var setsWonP2 = 0 // Jumlah set yang dimenangkan P2
 
+    private var currentSet = 1 // Set aktif (1, 2, atau 3)
+    private var setHistoryString = StringBuilder() // Menyimpan riwayat skor ("21-15, ...")
+
+    // DATA PLAYER
+    private var masterPlayerList = ArrayList<Player>()
+    private var listForP1 = ArrayList<Player>()
+    private var listForP2 = ArrayList<Player>()
     private lateinit var adapterP1: ArrayAdapter<Player>
     private lateinit var adapterP2: ArrayAdapter<Player>
-
     private val placeholderPlayer = Player(id = "dummy_id", name = "Pilih Player")
-
-    // !!! PENTING: Mencegah Infinite Loop saat update silang !!!
     private var isUpdating = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,224 +44,237 @@ class MatchScoring : AppCompatActivity() {
         setContentView(binding.root)
         db = Firebase.firestore
 
-        setupSpinners() // Siapkan adapter kosong dulu
+        setupSpinners()
         setupButtons()
-        loadPlayersFromFirebase() // Isi data
+        loadPlayersFromFirebase()
+        updateUI() // Inisialisasi tampilan awal
     }
 
+    // --- BAGIAN SPINNER (TIDAK BERUBAH) ---
     private fun setupSpinners() {
         adapterP1 = ArrayAdapter(this, R.layout.spinner_item, listForP1)
         adapterP2 = ArrayAdapter(this, R.layout.spinner_item, listForP2)
-
         binding.spinnerPlayer1.adapter = adapterP1
         binding.spinnerPlayer2.adapter = adapterP2
 
-        // --- LISTENER PLAYER 1 ---
         binding.spinnerPlayer1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                if (isUpdating) return // Stop jika sedang diproses program
-
-                val selectedP1 = listForP1[position]
-
-                // Update daftar Player 2 berdasarkan pilihan P1
-                updateOtherSpinner(
-                    targetList = listForP2,
-                    targetAdapter = adapterP2,
-                    targetSpinner = binding.spinnerPlayer2,
-                    playerToExclude = selectedP1
-                )
+                if (isUpdating) return
+                updateOtherSpinner(listForP2, adapterP2, binding.spinnerPlayer2, listForP1[position])
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // --- LISTENER PLAYER 2 ---
         binding.spinnerPlayer2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                if (isUpdating) return // Stop jika sedang diproses program
-
-                val selectedP2 = listForP2[position]
-
-                // Update daftar Player 1 berdasarkan pilihan P2
-                updateOtherSpinner(
-                    targetList = listForP1,
-                    targetAdapter = adapterP1,
-                    targetSpinner = binding.spinnerPlayer1,
-                    playerToExclude = selectedP2
-                )
+                if (isUpdating) return
+                updateOtherSpinner(listForP1, adapterP1, binding.spinnerPlayer1, listForP2[position])
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
     }
 
-    // Fungsi Pintar untuk Update Silang
     private fun updateOtherSpinner(
         targetList: ArrayList<Player>,
         targetAdapter: ArrayAdapter<Player>,
         targetSpinner: android.widget.Spinner,
         playerToExclude: Player
     ) {
-        // 1. Simpan pemain yang SEDANG dipilih di spinner target sebelum kita update listnya
         val currentSelection = targetSpinner.selectedItem as? Player ?: placeholderPlayer
-
-        // 2. Aktifkan Flag: "Jangan trigger listener dulu, saya mau ubah data"
         isUpdating = true
-
-        // 3. Reset isi list target
         targetList.clear()
-        targetList.add(placeholderPlayer) // Selalu add placeholder
+        targetList.add(placeholderPlayer)
 
-        // 4. Masukkan semua master player KECUALI yang harus di-exclude
         if (playerToExclude.id == placeholderPlayer.id) {
-            // Jika spinner pemicu memilih "Pilih Player", target boleh tampilkan semua
             targetList.addAll(masterPlayerList)
         } else {
-            // Filter player yang sedang dipilih di spinner sebelah
             val filtered = masterPlayerList.filter { it.id != playerToExclude.id }
             targetList.addAll(filtered)
         }
-
         targetAdapter.notifyDataSetChanged()
 
-        // 5. KEMBALIKAN PILIHAN (Restore Selection)
-        // Kita cari, apakah pemain yang tadi dipilih di spinner target masih ada di list baru?
-        // (Misal: P1 pilih "Ayam". P2 tadinya "Bebek". List P2 berubah (Ayam hilang). Tapi "Bebek" masih ada.
-        // Maka P2 harus tetap pilih "Bebek", jangan reset ke "Pilih Player")
-
-        var newPosition = 0 // Default ke placeholder
-
-        // Cari index pemain lama di list yang baru
+        var newPosition = 0
         for (i in targetList.indices) {
             if (targetList[i].id == currentSelection.id) {
                 newPosition = i
                 break
             }
         }
-
-        // Set kembali posisinya
         targetSpinner.setSelection(newPosition)
-
-        // 6. Matikan Flag
         isUpdating = false
     }
 
     private fun loadPlayersFromFirebase() {
-        db.collection("players")
-            .get()
-            .addOnSuccessListener { result ->
-                masterPlayerList.clear()
-
-                for (document in result) {
-                    val player = document.toObject(Player::class.java)
-                    player.id = document.id
-                    masterPlayerList.add(player)
-                }
-
-                // Update List P1 (Isi: Placeholder + Semua Player)
-                listForP1.clear()
-                listForP1.add(placeholderPlayer)
-                listForP1.addAll(masterPlayerList)
-                adapterP1.notifyDataSetChanged()
-
-                // Update List P2 (Isi awal sama dengan P1)
-                listForP2.clear()
-                listForP2.add(placeholderPlayer)
-                listForP2.addAll(masterPlayerList)
-                adapterP2.notifyDataSetChanged()
+        db.collection("players").get().addOnSuccessListener { result ->
+            masterPlayerList.clear()
+            for (document in result) {
+                val player = document.toObject(Player::class.java)
+                player.id = document.id
+                masterPlayerList.add(player)
             }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Gagal ambil data: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
+            listForP1.clear(); listForP1.add(placeholderPlayer); listForP1.addAll(masterPlayerList)
+            adapterP1.notifyDataSetChanged()
+            listForP2.clear(); listForP2.add(placeholderPlayer); listForP2.addAll(masterPlayerList)
+            adapterP2.notifyDataSetChanged()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Gagal ambil data", Toast.LENGTH_SHORT).show()
+        }
     }
 
+    // --- BUTTONS & LOGIC UTAMA ---
     private fun setupButtons() {
-        // Kontrol Score P1
-        binding.btnAddP1.setOnClickListener { scoreP1++; updateScoreDisplay() }
-        binding.btnMinP1.setOnClickListener { if (scoreP1 > 0) scoreP1--; updateScoreDisplay() }
+        binding.btnAddP1.setOnClickListener {
+            scoreP1++
+            updateUI()
+            checkSetWinner() // Cek apakah set selesai setiap poin bertambah
+        }
+        binding.btnMinP1.setOnClickListener {
+            if (scoreP1 > 0) { scoreP1--; updateUI() }
+        }
 
-        // Kontrol Score P2
-        binding.btnAddP2.setOnClickListener { scoreP2++; updateScoreDisplay() }
-        binding.btnMinP2.setOnClickListener { if (scoreP2 > 0) scoreP2--; updateScoreDisplay() }
+        binding.btnAddP2.setOnClickListener {
+            scoreP2++
+            updateUI()
+            checkSetWinner() // Cek apakah set selesai setiap poin bertambah
+        }
+        binding.btnMinP2.setOnClickListener {
+            if (scoreP2 > 0) { scoreP2--; updateUI() }
+        }
 
-        // Tombol Finish
-        binding.btnFinishMatch.setOnClickListener { validateAndSaveMatch() }
+        binding.btnFinishMatch.setOnClickListener {
+            // Finish paksa
+            validateAndSaveMatch()
+        }
         binding.btnBack.setOnClickListener { finish() }
     }
 
-    private fun updateScoreDisplay() {
+    private fun updateUI() {
         binding.tvScoreP1.text = scoreP1.toString()
         binding.tvScoreP2.text = scoreP2.toString()
+
+        // Update Indikator Set
+        // Kita perlu try-catch atau pengecekan null jika binding belum siap, tapi di sini aman
+        try {
+            // Karena ID ini baru ditambahkan di XML, pastikan XML sudah diupdate
+            // Jika merah, berarti XML belum diupdate
+            val tvSet = findViewById<android.widget.TextView>(R.id.tvCurrentSet)
+            val tvHistory = findViewById<android.widget.TextView>(R.id.tvSetHistory)
+
+            if (tvSet != null) tvSet.text = "SET $currentSet"
+            if (tvHistory != null) {
+                tvHistory.text = if (setHistoryString.isEmpty()) "History: -" else "History: $setHistoryString"
+            }
+        } catch (e: Exception) {
+            // Ignore UI update error if view not found
+        }
+    }
+
+    // --- LOGIKA PERATURAN BADMINTON (DEUCE & MAX 30) ---
+    private fun checkSetWinner() {
+        val diff = abs(scoreP1 - scoreP2)
+        val leaderScore = if (scoreP1 > scoreP2) scoreP1 else scoreP2
+
+        // MENANG JIKA:
+        // 1. Skor >= 21 DAN Selisih >= 2 (Normal / Deuce 2 poin)
+        // 2. ATAU Skor == 30 (Sudden Death / Max Point)
+        val isSetOver = (leaderScore >= 21 && diff >= 2) || (leaderScore == 30)
+
+        if (isSetOver) {
+            val p1 = binding.spinnerPlayer1.selectedItem as? Player
+            val p2 = binding.spinnerPlayer2.selectedItem as? Player
+            val winnerName = if (scoreP1 > scoreP2) p1?.name else p2?.name
+
+            // 1. Simpan skor set ke history
+            if (setHistoryString.isNotEmpty()) setHistoryString.append(", ")
+            setHistoryString.append("$scoreP1-$scoreP2")
+
+            // 2. Update Set Won
+            if (scoreP1 > scoreP2) setsWonP1++ else setsWonP2++
+
+            // 3. Munculkan Dialog
+            AlertDialog.Builder(this)
+                .setTitle("SET $currentSet SELESAI!")
+                .setMessage("Pemenang Set: $winnerName\nSkor: $scoreP1 - $scoreP2")
+                .setCancelable(false)
+                .setPositiveButton("LANJUT") { _, _ ->
+                    checkMatchWinner() // Cek apakah Match sudah selesai total
+                }
+                .show()
+        }
+    }
+
+    // --- LOGIKA BEST OF 3 (RUBBER SET) ---
+    private fun checkMatchWinner() {
+        // Jika salah satu pemain sudah menang 2 set -> MATCH SELESAI
+        if (setsWonP1 == 2 || setsWonP2 == 2) {
+            val p1Name = (binding.spinnerPlayer1.selectedItem as? Player)?.name
+            val p2Name = (binding.spinnerPlayer2.selectedItem as? Player)?.name
+            val winner = if (setsWonP1 == 2) p1Name else p2Name
+
+            AlertDialog.Builder(this)
+                .setTitle("🏆 MATCH SELESAI! 🏆")
+                .setMessage("Pemenang: $winner\nSkor Akhir (Set): $setsWonP1 - $setsWonP2\nDetail: $setHistoryString")
+                .setPositiveButton("SIMPAN DATA") { _, _ ->
+                    validateAndSaveMatch()
+                }
+                .setCancelable(false)
+                .show()
+        } else {
+            // Jika Skor Set masih 1-0 atau 1-1, Lanjut Set Berikutnya
+            currentSet++
+            resetScoreForNextSet()
+        }
+    }
+
+    private fun resetScoreForNextSet() {
+        scoreP1 = 0
+        scoreP2 = 0
+        updateUI()
+        Toast.makeText(this, "Memulai Set $currentSet", Toast.LENGTH_SHORT).show()
     }
 
     private fun validateAndSaveMatch() {
         val p1 = binding.spinnerPlayer1.selectedItem as? Player
         val p2 = binding.spinnerPlayer2.selectedItem as? Player
 
-        // Validasi: Pastikan data tidak null dan bukan Placeholder
         if (p1 == null || p2 == null || p1.id == placeholderPlayer.id || p2.id == placeholderPlayer.id) {
-            Toast.makeText(this, "Mohon pilih kedua pemain!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Mohon pilih pemain!", Toast.LENGTH_SHORT).show()
             return
         }
-
-        // Validasi Extra (Meskipun spinner sudah memfilter, tetap good practice dijaga)
         if (p1.id == p2.id) {
             Toast.makeText(this, "Pemain tidak boleh sama!", Toast.LENGTH_LONG).show()
             return
         }
 
-        if (scoreP1 == 0 && scoreP2 == 0) {
-            Toast.makeText(this, "Skor masih 0-0, mainkan dulu!", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        saveMatchToFirebase(p1, p2)
-    }
-
-    private fun resetMatch() {
-        scoreP1 = 0
-        scoreP2 = 0
-        updateScoreDisplay()
-
-        // Kembalikan Spinner ke "Pilih Player"
-        binding.spinnerPlayer1.setSelection(0)
-        binding.spinnerPlayer2.setSelection(0)
-
-        Toast.makeText(this, "Siap untuk match baru!", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun saveMatchToFirebase(p1: Player, p2: Player) {
-        // Menyiapkan object MatchHistory
-        // Pastikan constructor MatchHistory sesuai dengan Data Class kamu
+        // --- SIMPAN KE FIREBASE ---
         val match = MatchHistory(
             player1Name = p1.name,
             player2Name = p2.name,
-            scorePlayer1 = scoreP1,
-            scorePlayer2 = scoreP2
-            // tambahkan field date/timestamp jika ada di data class MatchHistory
+            scorePlayer1 = setsWonP1, // Simpan Jumlah SET yang dimenangkan
+            scorePlayer2 = setsWonP2,
+            matchDetails = setHistoryString.toString() // Simpan detail skor per set
         )
 
         val batch = db.batch()
-
-        // 1. Simpan Match
         val matchRef = db.collection("matches").document()
         match.id = matchRef.id
         batch.set(matchRef, match)
 
-        // 2. Update Stats P1
+        // Update Stats Player 1
         val p1Ref = db.collection("players").document(p1.id)
-        val p1Win = if (scoreP1 > scoreP2) 1 else 0
-        val p1Lose = if (scoreP1 < scoreP2) 1 else 0
+        val p1Win = if (setsWonP1 > setsWonP2) 1 else 0
+        val p1Lose = if (setsWonP1 < setsWonP2) 1 else 0
         batch.update(p1Ref, "totalMatch", p1.totalMatch + 1, "win", p1.win + p1Win, "lose", p1.lose + p1Lose)
 
-        // 3. Update Stats P2
+        // Update Stats Player 2
         val p2Ref = db.collection("players").document(p2.id)
-        val p2Win = if (scoreP2 > scoreP1) 1 else 0
-        val p2Lose = if (scoreP2 < scoreP1) 1 else 0
+        val p2Win = if (setsWonP2 > setsWonP1) 1 else 0
+        val p2Lose = if (setsWonP2 < setsWonP1) 1 else 0
         batch.update(p2Ref, "totalMatch", p2.totalMatch + 1, "win", p2.win + p2Win, "lose", p2.lose + p2Lose)
 
         batch.commit()
             .addOnSuccessListener {
-                Toast.makeText(this, "Match Saved!", Toast.LENGTH_LONG).show()
-//                resetMatch()
+                Toast.makeText(this, "Data Berhasil Disimpan!", Toast.LENGTH_LONG).show()
                 finish()
             }
             .addOnFailureListener { e ->

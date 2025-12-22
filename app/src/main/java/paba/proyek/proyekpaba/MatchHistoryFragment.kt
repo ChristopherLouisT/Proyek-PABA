@@ -1,5 +1,6 @@
 package paba.proyek.proyekpaba
 
+import MatchHistory
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -135,14 +136,21 @@ class MatchHistoryFragment : Fragment() {
                         dateTimestamp = document.getLong("dateTimestamp") ?: 0L,
                         player1Name = document.getString("player1Name") ?: "",
                         player2Name = document.getString("player2Name") ?: "",
-                        scorePlayer1 = document.get("scorePlayer1").toString().toInt(),
-                        scorePlayer2 = document.get("scorePlayer2").toString().toInt()
+
+                        // --- BAGIAN PERBAIKAN ---
+                        // Ambil sebagai Object -> toString -> toInt
+                        // Ini aman meskipun datanya String "2" atau Number 2
+                        scorePlayer1 = document.get("scorePlayer1").toString().toIntOrNull() ?: 0,
+                        scorePlayer2 = document.get("scorePlayer2").toString().toIntOrNull() ?: 0,
+
+                        matchDetails = document.getString("matchDetails") ?: ""
                     )
                     allMatches.add(match)
                 }
 
                 filteredMatches.addAll(allMatches)
                 adapter.notifyDataSetChanged()
+                checkEmptyState()
             }
     }
     companion object {
