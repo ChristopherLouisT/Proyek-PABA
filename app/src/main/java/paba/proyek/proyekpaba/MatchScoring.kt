@@ -184,6 +184,10 @@ class MatchScoring : AppCompatActivity() {
     private fun updateScoreDisplay() {
         binding.tvScoreP1.text = scoreP1.toString()
         binding.tvScoreP2.text = scoreP2.toString()
+
+        if (scoreP1 == 21 || scoreP2 == 21) {
+            binding.btnFinishMatch.performClick()
+        }
     }
 
     private fun validateAndSaveMatch() {
