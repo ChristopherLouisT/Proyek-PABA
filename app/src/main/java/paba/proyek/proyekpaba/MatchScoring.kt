@@ -23,11 +23,11 @@ class MatchScoring : AppCompatActivity() {
     private var scoreP1 = 0
     private var scoreP2 = 0
 
-    private var setsWonP1 = 0 // Jumlah set yang dimenangkan P1
-    private var setsWonP2 = 0 // Jumlah set yang dimenangkan P2
+    private var setsWonP1 = 0
+    private var setsWonP2 = 0
 
-    private var currentSet = 1 // Set aktif (1, 2, atau 3)
-    private var setHistoryString = StringBuilder() // Menyimpan riwayat skor ("21-15, ...")
+    private var currentSet = 1
+    private var setHistoryString = StringBuilder()
 
     // DATA PLAYER
     private var masterPlayerList = ArrayList<Player>()
@@ -47,10 +47,9 @@ class MatchScoring : AppCompatActivity() {
         setupSpinners()
         setupButtons()
         loadPlayersFromFirebase()
-        updateUI() // Inisialisasi tampilan awal
+        updateUI()
     }
 
-    // --- BAGIAN SPINNER (TIDAK BERUBAH) ---
     private fun setupSpinners() {
         adapterP1 = ArrayAdapter(this, R.layout.spinner_item, listForP1)
         adapterP2 = ArrayAdapter(this, R.layout.spinner_item, listForP2)
@@ -121,12 +120,11 @@ class MatchScoring : AppCompatActivity() {
         }
     }
 
-    // --- BUTTONS & LOGIC UTAMA ---
     private fun setupButtons() {
         binding.btnAddP1.setOnClickListener {
             scoreP1++
             updateUI()
-            checkSetWinner() // Cek apakah set selesai setiap poin bertambah
+            checkSetWinner()
         }
         binding.btnMinP1.setOnClickListener {
             if (scoreP1 > 0) { scoreP1--; updateUI() }
@@ -135,7 +133,7 @@ class MatchScoring : AppCompatActivity() {
         binding.btnAddP2.setOnClickListener {
             scoreP2++
             updateUI()
-            checkSetWinner() // Cek apakah set selesai setiap poin bertambah
+            checkSetWinner()
         }
         binding.btnMinP2.setOnClickListener {
             if (scoreP2 > 0) { scoreP2--; updateUI() }
@@ -152,11 +150,8 @@ class MatchScoring : AppCompatActivity() {
         binding.tvScoreP1.text = scoreP1.toString()
         binding.tvScoreP2.text = scoreP2.toString()
 
-        // Update Indikator Set
-        // Kita perlu try-catch atau pengecekan null jika binding belum siap, tapi di sini aman
+
         try {
-            // Karena ID ini baru ditambahkan di XML, pastikan XML sudah diupdate
-            // Jika merah, berarti XML belum diupdate
             val tvSet = findViewById<android.widget.TextView>(R.id.tvCurrentSet)
             val tvHistory = findViewById<android.widget.TextView>(R.id.tvSetHistory)
 
@@ -165,11 +160,9 @@ class MatchScoring : AppCompatActivity() {
                 tvHistory.text = if (setHistoryString.isEmpty()) "History: -" else "History: $setHistoryString"
             }
         } catch (e: Exception) {
-            // Ignore UI update error if view not found
         }
     }
 
-    // --- LOGIKA PERATURAN BADMINTON (DEUCE & MAX 30) ---
     private fun checkSetWinner() {
         val diff = abs(scoreP1 - scoreP2)
         val leaderScore = if (scoreP1 > scoreP2) scoreP1 else scoreP2
@@ -184,28 +177,23 @@ class MatchScoring : AppCompatActivity() {
             val p2 = binding.spinnerPlayer2.selectedItem as? Player
             val winnerName = if (scoreP1 > scoreP2) p1?.name else p2?.name
 
-            // 1. Simpan skor set ke history
             if (setHistoryString.isNotEmpty()) setHistoryString.append(", ")
             setHistoryString.append("$scoreP1-$scoreP2")
 
-            // 2. Update Set Won
             if (scoreP1 > scoreP2) setsWonP1++ else setsWonP2++
 
-            // 3. Munculkan Dialog
             AlertDialog.Builder(this)
                 .setTitle("SET $currentSet SELESAI!")
                 .setMessage("Pemenang Set: $winnerName\nSkor: $scoreP1 - $scoreP2")
                 .setCancelable(false)
                 .setPositiveButton("LANJUT") { _, _ ->
-                    checkMatchWinner() // Cek apakah Match sudah selesai total
+                    checkMatchWinner()
                 }
                 .show()
         }
     }
 
-    // --- LOGIKA BEST OF 3 (RUBBER SET) ---
     private fun checkMatchWinner() {
-        // Jika salah satu pemain sudah menang 2 set -> MATCH SELESAI
         if (setsWonP1 == 2 || setsWonP2 == 2) {
             val p1Name = (binding.spinnerPlayer1.selectedItem as? Player)?.name
             val p2Name = (binding.spinnerPlayer2.selectedItem as? Player)?.name
@@ -220,7 +208,6 @@ class MatchScoring : AppCompatActivity() {
                 .setCancelable(false)
                 .show()
         } else {
-            // Jika Skor Set masih 1-0 atau 1-1, Lanjut Set Berikutnya
             currentSet++
             resetScoreForNextSet()
         }
@@ -246,13 +233,13 @@ class MatchScoring : AppCompatActivity() {
             return
         }
 
-        // --- SIMPAN KE FIREBASE ---
+        // SIMPAN KE FIREBASE
         val match = MatchHistory(
             player1Name = p1.name,
             player2Name = p2.name,
-            scorePlayer1 = setsWonP1, // Simpan Jumlah SET yang dimenangkan
+            scorePlayer1 = setsWonP1,
             scorePlayer2 = setsWonP2,
-            matchDetails = setHistoryString.toString() // Simpan detail skor per set
+            matchDetails = setHistoryString.toString()
         )
 
         val batch = db.batch()
