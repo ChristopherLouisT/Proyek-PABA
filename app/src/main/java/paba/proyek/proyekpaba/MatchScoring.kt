@@ -167,9 +167,9 @@ class MatchScoring : AppCompatActivity() {
         val diff = abs(scoreP1 - scoreP2)
         val leaderScore = if (scoreP1 > scoreP2) scoreP1 else scoreP2
 
-        // MENANG JIKA:
-        // 1. Skor >= 21 DAN Selisih >= 2 (Normal / Deuce 2 poin)
-        // 2. ATAU Skor == 30 (Sudden Death / Max Point)
+        // Player akan win jika:
+        // 1. Skor >= 21 DAN Selisih skor P1 & P2 >= 2 (Normal / Deuce 2 poin)
+        // 2. ATAU Skor salah satu player == 30 (Sudden Death / Max Point)
         val isSetOver = (leaderScore >= 21 && diff >= 2) || (leaderScore == 30)
 
         if (isSetOver) {
@@ -233,7 +233,7 @@ class MatchScoring : AppCompatActivity() {
             return
         }
 
-        // SIMPAN KE FIREBASE
+        // Simpan match ke Firebase
         val match = MatchHistory(
             player1Name = p1.name,
             player2Name = p2.name,

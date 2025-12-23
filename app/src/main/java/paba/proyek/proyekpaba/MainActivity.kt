@@ -27,9 +27,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnAdd = findViewById<FloatingActionButton>(R.id.btnAdd)
-//        btnAdd.setOnClickListener {
-//            startActivity(Intent(this, MatchScoring::class.java))
-//        }
 
         if (savedInstanceState == null) {
             replaceFragment(MatchHistoryFragment())

@@ -49,7 +49,7 @@ class MatchHistoryAdapter(
             holder.tvScore.text = "${item.scorePlayer2} - ${item.scorePlayer1}"
         }
 
-        // 2. Format Detail Skor agar vertikal (Ganti Koma dengan Enter)
+        // 2. Format Detail Skornya agar vertikal (Ganti Koma dengan Enter)
         if (item.matchDetails.isNotEmpty()) {
             // Ubah "21-18, 19-21" menjadi enter ke bawah
             val verticalDetails = item.matchDetails.replace(", ", "\n")
@@ -69,7 +69,7 @@ class MatchHistoryAdapter(
 
     private fun millisToDateString(millis: Long): String {
         // Format: 12 Des 2025, 14:00
-        val sdf = java.text.SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID"))
+        val sdf = java.text.SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale("id", "ID"))
         return sdf.format(Date(millis))
     }
 

@@ -56,7 +56,6 @@ class MatchHistoryFragment : Fragment() {
         (requireActivity() as MainActivity).setFabAction(
             iconRes = R.drawable.add
         ) {
-            // Floating Button for Match History
             startActivity(Intent(requireContext(), MatchScoring::class.java))
         }
     }
@@ -65,7 +64,6 @@ class MatchHistoryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_match_history, container, false)
     }
 
@@ -105,7 +103,7 @@ class MatchHistoryFragment : Fragment() {
     }
 
     private fun millisToDateString(millis: Long): String {
-        val sdf = java.text.SimpleDateFormat("dd MMMM yyyy", Locale("en"))
+        val sdf = java.text.SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
         return sdf.format(Date(millis))
     }
 
@@ -137,7 +135,7 @@ class MatchHistoryFragment : Fragment() {
                         player1Name = document.getString("player1Name") ?: "",
                         player2Name = document.getString("player2Name") ?: "",
 
-                        // --- BAGIAN PERBAIKAN ---
+                        // BAGIAN PERBAIKAN
                         // Ambil sebagai Object -> toString -> toInt
                         // Ini aman meskipun datanya String "2" atau Number 2
                         scorePlayer1 = document.get("scorePlayer1").toString().toIntOrNull() ?: 0,

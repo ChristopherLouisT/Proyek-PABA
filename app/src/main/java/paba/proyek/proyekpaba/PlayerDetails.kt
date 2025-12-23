@@ -30,7 +30,7 @@ class PlayerDetails : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player_details)
 
-        // 1. Inisialisasi View
+        // Inisialisasi View
         tvAvatar = findViewById(R.id.tvDetailAvatar)
         tvName = findViewById(R.id.tvDetailName)
         tvWin = findViewById(R.id.tvDetailWin)
@@ -38,14 +38,14 @@ class PlayerDetails : AppCompatActivity() {
         tvTotal = findViewById(R.id.tvDetailTotal)
         rvMatches = findViewById(R.id.rvPlayerMatches)
 
-        // 2. Ambil Data dari Intent
+        // Ambil Data dari Intent
         val id = intent.getStringExtra("EXTRA_PLAYER_ID") ?: ""
         playerName = intent.getStringExtra("EXTRA_PLAYER_NAME") ?: "Unknown"
         val win = intent.getIntExtra("EXTRA_PLAYER_WIN", 0)
         val lose = intent.getIntExtra("EXTRA_PLAYER_LOSE", 0)
         val total = intent.getIntExtra("EXTRA_PLAYER_TOTAL", 0)
 
-        // 3. Tampilkan Stats
+        // Tampilkan Stats
         tvName.text = playerName
         tvWin.text = win.toString()
         tvLose.text = lose.toString()
@@ -55,19 +55,18 @@ class PlayerDetails : AppCompatActivity() {
         tvAvatar.text = playerName.firstOrNull()?.uppercase() ?: "?"
         tvAvatar.background.setTint(getAvatarColor(id.ifEmpty { playerName }))
 
-        // 4. Setup RecyclerView (Pakai MatchHistoryAdapter yg sudah ada)
+        // Setup RecyclerView (Pakai MatchHistoryAdapter yg sudah ada)
         adapter = MatchHistoryAdapter(playerMatches)
         rvMatches.layoutManager = LinearLayoutManager(this)
         rvMatches.adapter = adapter
 
-        // 5. Load History Khusus Player Ini
+        // Load History Khusus Player Ini
         loadSpecificPlayerMatches(playerName)
 
         val btnBack = findViewById<android.widget.ImageButton>(R.id.btnBack)
 
-        // LOGIKA TOMBOL BACK
         btnBack.setOnClickListener {
-            finish() // Menutup activity ini dan kembali ke fragment profile
+            finish() // Menutup activity dan kembali ke fragment profile
         }
     }
 
@@ -82,7 +81,7 @@ class PlayerDetails : AppCompatActivity() {
                     val p1 = document.getString("player1Name") ?: ""
                     val p2 = document.getString("player2Name") ?: ""
 
-                    // LOGIKA FILTER:
+                    // Filter
                     // Masukkan ke list HANYA JIKA player ini adalah Player 1 ATAU Player 2
                     if (p1 == name || p2 == name) {
                         val match = MatchHistory(
